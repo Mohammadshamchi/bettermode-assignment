@@ -18,6 +18,16 @@ export interface Post {
   };
 }
 
+export interface BlogPost extends Post {
+  author: {
+    name: string;
+    avatar: string;
+  };
+  imageUrl: string;
+  categories: string[];
+  readTime: string;
+}
+
 export interface PostsResponse {
   posts: {
     edges: {
@@ -29,4 +39,16 @@ export interface PostsResponse {
       endCursor: string;
     };
   };
+}
+
+export interface BlogCardProps {
+  post: BlogPost;
+  onClick?: (id: string) => void;
+}
+
+export interface BlogGridProps {
+  posts: BlogPost[];
+  loading: boolean;
+  hasMore: boolean;
+  onLoadMore: () => void;
 }

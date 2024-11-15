@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_POSTS } from '../graphql/queries';
+import { GET_POSTS } from '../graphql/queries/posts';
 import type { BlogPost } from '../types/blog.types';
 
 export function usePosts(limit: number = 10) {
