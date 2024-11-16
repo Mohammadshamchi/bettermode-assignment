@@ -8,6 +8,13 @@ export interface Post {
   url: string;
   relativeUrl: string;
   reactionsCount: number;
+  thumbnail?: {
+    url?: string;
+    urls?: {
+      medium?: string;
+      small?: string;
+    };
+  };
   reactions: {
     reaction: string;
     count: number;
@@ -15,6 +22,16 @@ export interface Post {
   space: {
     id: string;
     name: string;
+  };
+  owner?: {
+    member?: {
+      displayName: string;
+      profilePicture?: {
+        urls?: {
+          thumb?: string;
+        };
+      };
+    };
   };
 }
 

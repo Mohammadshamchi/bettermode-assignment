@@ -1,5 +1,5 @@
 import { Book } from 'lucide-react';
-import { BlogGrid } from '../components/blog/BlogGrid';
+import BlogGrid from '@/components/blog/BlogGrid';
 import { usePosts } from '../hooks/usePosts';
 import { Header } from '../layouts/Header';
 
@@ -19,6 +19,12 @@ export function BlogListPage() {
         );
     }
 
+    // Transform posts to include thumbnail URL if available
+    const postsWithThumbnails = posts.map(post => ({
+        ...post,
+        thumbnailUrl: post.thumbnail?.urls?.medium || post.thumbnail?.url || null
+    }));
+
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
@@ -30,11 +36,10 @@ export function BlogListPage() {
                 </div>
 
                 <BlogGrid
-                    posts={posts}
+                    posts={postsWithThumbnails}
                     loading={loading}
                     hasMore={hasMore}
-                    onLoadMore={loadMore}
-                />
+                    onLoadMore={loadMore} />
             </main>
         </div>
     );

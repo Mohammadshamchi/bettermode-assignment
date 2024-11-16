@@ -20,6 +20,16 @@ export const GET_POSTS = gql`
           url
           relativeUrl
           reactionsCount
+          thumbnail {
+            ... on Image {
+              id
+              url
+              urls {
+                medium
+                small
+              }
+            }
+          }
           reactions {
             reaction
             count
@@ -27,6 +37,18 @@ export const GET_POSTS = gql`
           space {
             id
             name
+          }
+          owner {
+            member {
+              displayName
+              profilePicture {
+                ... on Image {
+                  urls {
+                    thumb
+                  }
+                }
+              }
+            }
           }
         }
       }

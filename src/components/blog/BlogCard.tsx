@@ -1,51 +1,81 @@
-import { Clock } from 'lucide-react';
-import { BlogCardProps } from '../../types/blog.types';
+import React from 'react';
+import { Clock, User } from 'lucide-react';
+import { Card, CardHeader, CardContent } from '@/components/ui/card';
+import { BlogCardProps } from '@/types/blog.types';
+
+const calculateReadTime = (content: string): number => {
+    const wordsPerMinute = 200;
+    const text = content.replace(/<[^>]*>?/gm, '');
+    const words = text.trim().split(/\s+/).length;
+    return Math.ceil(words / wordsPerMinute);
+};
 
 export function BlogCard({ post, onClick }: BlogCardProps) {
+    const readTime = calculateReadTime(post.description || post.shortContent || '');
+
     return (
-        <div
+        <Card
+            className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer"
             onClick={() => onClick?.(post.id)}
-            className="max-w-sm rounded-lg overflow-hidden shadow-md border border-gray-200 bg-white transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
         >
-            <div className="h-48 bg-gradient-to-r from-blue-400 to-white relative">
-                <div className="absolute inset-0 bg-pattern opacity-50"></div>
-                <img
-                    src={post.imageUrl}
-                    alt={post.title}
-                    className="w-full h-full object-cover mix-blend-overlay"
-                />
+            <div className="relative w-full h-48">
+                {post.imageUrl ? (
+                    <img
+                        src={post.imageUrl}
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                    />
+                ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-100 flex items-center justify-center">
+                        <div className="text-2xl font-bold text-white/80">
+                            {post.space.name}
+                        </div>
+                    </div>
+                )}
             </div>
 
-            <div className="p-6">
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {post.categories.map((category, index) => (
-                        <span
-                            key={index}
-                            className="px-2 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full"
-                        >
-                            {category}
-                        </span>
-                    ))}
+            <CardHeader className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                    <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                        {post.space.name}
+                    </span>
                 </div>
+                <h3 className="font-bold text-xl leading-tight line-clamp-2 text-gray-900">
+                    {post.title}
+                </h3>
+            </CardHeader>
 
-                <h2 className="text-xl font-bold text-gray-800 mb-2">{post.title}</h2>
-                <p className="text-gray-600 mb-4 line-clamp-2">{post.description}</p>
+            <CardContent>
+                <div className="space-y-4">
+                    <p className="text-gray-600 line-clamp-2 text-sm">
+                        {post.shortContent || post.description || 'No description available'}
+                    </p>
 
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                        <img
-                            src={post.author.avatar}
-                            alt={post.author.name}
-                            className="w-8 h-8 rounded-full mr-2"
-                        />
-                        <span className="text-sm text-gray-700">{post.author.name}</span>
-                    </div>
-                    <div className="flex items-center text-sm text-gray-500">
-                        <Clock className="w-4 h-4 mr-1" />
-                        <span>{post.readTime}</span>
+                    <div className="flex items-center justify-between pt-4 border-t">
+                        <div className="flex items-center space-x-2">
+                            {post.owner?.member?.profilePicture?.urls?.thumb ? (
+                                <img
+                                    src={post.owner.member.profilePicture.urls.thumb}
+                                    alt={post.owner?.member?.displayName || 'Anonymous'}
+                                    className="w-8 h-8 rounded-full object-cover"
+                                />
+                            ) : (
+                                <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                                    <User className="w-4 h-4 text-gray-500" />
+                                </div>
+                            )}
+                            <span className="text-sm font-medium text-gray-700">
+                                {post.owner?.member?.displayName || 'Anonymous'}
+                            </span>
+                        </div>
+
+                        <div className="flex items-center text-sm text-gray-500">
+                            <Clock className="w-4 h-4 mr-1" />
+                            <span>{readTime} min read</span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </CardContent>
+        </Card>
     );
 }
