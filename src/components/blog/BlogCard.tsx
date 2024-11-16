@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, User } from 'lucide-react';
+import { Clock, User, Heart } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 import { BlogCardProps } from '@/types/blog.types';
 
@@ -69,9 +69,21 @@ export function BlogCard({ post, onClick }: BlogCardProps) {
                             </span>
                         </div>
 
-                        <div className="flex items-center text-sm text-gray-500">
-                            <Clock className="w-4 h-4 mr-1" />
-                            <span>{readTime} min read</span>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center text-sm text-gray-500">
+                                <Clock className="w-4 h-4 mr-1" />
+                                <span>{readTime} min read</span>
+                            </div>
+                            <button
+                                className="flex items-center gap-1 text-gray-600 hover:text-red-500 transition-colors"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Handle reaction click (you can implement the logic here)
+                                }}
+                            >
+                                <Heart className={`w-5 h-5 ${post.reactionsCount > 0 ? 'fill-red-500 text-red-500' : ''}`} />
+                                <span className="text-sm">{post.reactionsCount || 0}</span>
+                            </button>
                         </div>
                     </div>
                 </div>
