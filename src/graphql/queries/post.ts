@@ -7,11 +7,35 @@ export const GET_POST = gql`
       title
       description
       shortContent
+      textContent
       createdAt
       status
       url
       relativeUrl
       reactionsCount
+      hasMoreContent
+      fields {
+        key
+        value
+        relationEntities {
+          medias {
+            ... on Image {
+              url
+              urls {
+                full
+                large
+                medium
+                small
+              }
+            }
+          }
+        }
+      }
+      mappingFields {
+        key
+        type
+        value
+      }
       thumbnail {
         ... on Image {
           id
