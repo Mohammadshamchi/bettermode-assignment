@@ -2,12 +2,7 @@ import { gql } from '@apollo/client';
 
 export const GET_POSTS = gql`
   query GetPosts($limit: Int!, $after: String) {
-    posts(
-      limit: $limit
-      after: $after
-      orderBy: createdAt
-      reverse: true
-    ) {
+    posts(limit: $limit, after: $after, orderBy: createdAt, reverse: true) {
       edges {
         cursor
         node {
@@ -20,6 +15,21 @@ export const GET_POSTS = gql`
           url
           relativeUrl
           reactionsCount
+          fields {
+            key
+            value
+            relationEntities {
+              medias {
+                ... on Image {
+                  url
+                  urls {
+                    medium
+                    small
+                  }
+                }
+              }
+            }
+          }
           thumbnail {
             ... on Image {
               id

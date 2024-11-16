@@ -8,6 +8,24 @@ export interface Post {
   url: string;
   relativeUrl: string;
   reactionsCount: number;
+  commentsCount?: number;
+  fields?: {
+    key: string;
+    value: string;
+    relationEntities?: {
+      medias?: Array<{
+        url?: string;
+        urls?: {
+          medium?: string;
+          small?: string;
+        };
+      }>;
+    };
+  }[];
+  tags?: Array<{
+    id: string;
+    title: string;
+  }>;
   thumbnail?: {
     url?: string;
     urls?: {
@@ -43,24 +61,12 @@ export interface BlogPost extends Post {
   imageUrl: string;
   categories: string[];
   readTime: string;
-}
-
-export interface PostsResponse {
-  posts: {
-    edges: {
-      cursor: string;
-      node: Post;
-    }[];
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-  };
+  fields?: Post['fields']; // Include fields from Post interface
 }
 
 export interface BlogCardProps {
   post: BlogPost;
-  onClick?: (id: string) => void;
+  onClick: (id: string) => void;
 }
 
 export interface BlogGridProps {
@@ -68,4 +74,17 @@ export interface BlogGridProps {
   loading: boolean;
   hasMore: boolean;
   onLoadMore: () => void;
+}
+
+export interface BlogPostsResponse {
+  posts: {
+    edges: Array<{
+      cursor: string;
+      node: Post;
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor: string;
+    };
+  };
 }

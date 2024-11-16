@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { GET_POST } from '@/graphql/queries/post';
@@ -6,7 +6,6 @@ import {
     Calendar,
     Clock,
     Heart,
-    Share2,
     MessageSquare,
     Bookmark,
     ChevronLeft,
@@ -16,12 +15,20 @@ import {
     Copy,
     Check
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
     Card,
     CardContent,
-} from '@/components/ui/card';
+} from '@/components/ui/Card';
+import { Post } from '@/types/blog.types';
+
+// Add an interface for the field structure
+interface Field {
+    key: string;
+    value: string;
+    // Add other field properties if they exist
+}
 
 const BlogPostPage = () => {
     const [copied, setCopied] = useState(false);
@@ -43,10 +50,12 @@ const BlogPostPage = () => {
         };
 
         // Check all possible content sources and clean them
-        const contentField = data.post.fields?.find(field => field.key === 'content');
+        const contentField = data.post.fields?.find((field: Field) => field.key === 'content');
         if (contentField) return cleanContent(contentField.value);
 
-        const contentMapping = data.post.mappingFields?.find(field => field.key === 'content');
+        const contentMapping = data.post.mappingFields?.find((field: { key: string }) =>
+            field.key === 'content'
+        );
         if (contentMapping) return cleanContent(contentMapping.value);
 
         const mainContent = data.post.textContent || data.post.shortContent || '';
@@ -224,7 +233,7 @@ const BlogPostPage = () => {
                         <div className="mb-12">
                             <h3 className="text-lg font-semibold mb-4 text-gray-900">Topics</h3>
                             <div className="flex flex-wrap gap-2">
-                                {post.tags.map((tag) => (
+                                {post.tags.map((tag: { id: string; title: string }) => (
                                     <Button
                                         key={tag.id}
                                         variant="outline"

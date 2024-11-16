@@ -1,15 +1,18 @@
-import { BlogGridProps } from '@/types/blog.types'
+import { memo } from 'react';
+import { BlogGridProps, BlogPost } from '@/types/blog.types'
 import { BlogCard } from './BlogCard'
 
-export default function BlogGrid({ posts, loading, onLoadMore, hasMore }: BlogGridProps) {
+const BlogGrid = memo(({ posts, loading, onLoadMore, hasMore }: BlogGridProps) => {
+    const postIds = posts.map((post: BlogPost) => post.id).join(',');
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-8" key={postIds}>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {posts.map((post) => (
+                {posts.map((post: BlogPost) => (
                     <BlogCard
                         key={post.id}
                         post={post}
-                        onClick={(id) => {
+                        onClick={(id: string) => {
                             window.location.href = `/post/${id}`
                         }}
                     />
@@ -29,4 +32,8 @@ export default function BlogGrid({ posts, loading, onLoadMore, hasMore }: BlogGr
             )}
         </div>
     )
-}
+})
+
+BlogGrid.displayName = 'BlogGrid';
+
+export default BlogGrid;

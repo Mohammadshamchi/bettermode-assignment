@@ -28,11 +28,31 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         posts: {
-          keyArgs: false,
-          merge(existing = { edges: [] }, incoming) {
+          keyArgs: ['spaceIds'],
+          merge(existing = { edges: [] }, incoming, { args }) {
+            if (!args?.after) {
+              return incoming;
+            }
+
+            const existingEdges = existing?.edges ?? [];
+            const incomingEdges = incoming?.edges ?? [];
+            
+            interface Edge {
+              node: {
+                id: string;
+                [key: string]: any;
+              };
+            }
+
+            const existingIds = new Set(existingEdges.map((edge: Edge) => edge.node.id));
+            
+            const uniqueIncomingEdges = incomingEdges.filter(
+              (edge: Edge) => !existingIds.has(edge.node.id)
+            );
+
             return {
               ...incoming,
-              edges: [...(existing?.edges || []), ...(incoming?.edges || [])],
+              edges: [...existingEdges, ...uniqueIncomingEdges],
             };
           },
         },
@@ -46,10 +66,11 @@ export const client = new ApolloClient({
   cache,
   defaultOptions: {
     watchQuery: {
-      fetchPolicy: 'network-only',
+      fetchPolicy: 'cache-and-network',
+      nextFetchPolicy: 'cache-first'
     },
     query: {
-      fetchPolicy: 'network-only',
-    },
+      fetchPolicy: 'cache-first'
+    }
   },
 });

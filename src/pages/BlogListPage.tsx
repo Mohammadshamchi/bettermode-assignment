@@ -1,10 +1,11 @@
+import React, { memo } from 'react';
 import { Book } from 'lucide-react';
 import BlogGrid from '@/components/blog/BlogGrid';
+import { Header } from '@/components/Header';
 import { usePosts } from '../hooks/usePosts';
-import { Header } from '../layouts/Header';
 
-export function BlogListPage() {
-    const { posts, loading, error, hasMore, loadMore } = usePosts(12); // Load 12 posts initially
+export const BlogListPage = memo(() => {
+    const { posts, loading, error, hasMore, loadMore } = usePosts(12);
 
     if (error) {
         return (
@@ -19,16 +20,16 @@ export function BlogListPage() {
         );
     }
 
-    // Transform posts to include thumbnail URL if available
-    const postsWithThumbnails = posts.map(post => ({
-        ...post,
-        thumbnailUrl: post.thumbnail?.urls?.medium || post.thumbnail?.url || null
-    }));
+    const postsWithThumbnails = React.useMemo(() => {
+        return posts.map(post => ({
+            ...post,
+            thumbnailUrl: post.thumbnail?.urls?.medium || post.thumbnail?.url || null
+        }));
+    }, [posts]);
 
     return (
         <div className="min-h-screen bg-gray-50">
             <Header />
-
             <main className="container mx-auto px-4 py-8">
                 <div className="flex items-center mb-8">
                     <Book className="h-10 w-10 text-blue-600 mr-4" />
@@ -39,8 +40,11 @@ export function BlogListPage() {
                     posts={postsWithThumbnails}
                     loading={loading}
                     hasMore={hasMore}
-                    onLoadMore={loadMore} />
+                    onLoadMore={loadMore}
+                />
             </main>
         </div>
     );
-}
+});
+
+BlogListPage.displayName = 'BlogListPage';
