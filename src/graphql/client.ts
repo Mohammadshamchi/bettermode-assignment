@@ -60,8 +60,8 @@ const cache = new InMemoryCache({
     Query: {
       fields: {
         posts: {
-          keyArgs: ['orderBy', 'reverse'],
-          merge(existing = { edges: [], pageInfo: {} }, incoming, { args }) {
+          keyArgs: ['spaceIds'],
+          merge(existing = { edges: [] }, incoming, { args }) {
             if (!args?.after) {
               return incoming;
             }
@@ -72,13 +72,34 @@ const cache = new InMemoryCache({
               pageInfo: incoming.pageInfo
             };
           }
+        },
+        replies: {
+          keyArgs: ['postId'],
+          merge(existing = { nodes: [] }, incoming, { args }) {
+            if (!args?.after) {
+              return incoming;
+            }
+
+            const existingNodes = existing?.nodes ?? [];
+            const incomingNodes = incoming?.nodes ?? [];
+
+            const existingIds = new Set(existingNodes.map(node => node.id));
+            const uniqueIncomingNodes = incomingNodes.filter(
+              node => !existingIds.has(node.id)
+            );
+
+            return {
+              ...incoming,
+              nodes: [...existingNodes, ...uniqueIncomingNodes],
+            };
+          }
         }
       }
     },
     Post: {
       fields: {
-        reactions: {
-          merge(existing = [], incoming) {
+        replies: {
+          merge(existing, incoming) {
             return incoming;
           }
         }

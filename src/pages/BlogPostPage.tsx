@@ -22,6 +22,7 @@ import {
     CardContent,
 } from '@/components/ui/Card';
 import { Post } from '@/types/blog.types';
+import { CommentSection } from '@/components/blog/CommentSection';
 
 // Add an interface for the field structure
 interface Field {
@@ -266,6 +267,10 @@ const BlogPostPage = () => {
                                     <Button
                                         variant="ghost"
                                         className="flex items-center gap-2"
+                                        onClick={() => {
+                                            const commentsSection = document.getElementById('comments-section');
+                                            commentsSection?.scrollIntoView({ behavior: 'smooth' });
+                                        }}
                                     >
                                         <MessageSquare className="w-5 h-5" />
                                         <span>Comments</span>
@@ -300,6 +305,13 @@ const BlogPostPage = () => {
                             </div>
                         </CardContent>
                     </Card>
+
+                    {/* Comments Section */}
+                    <div id="comments-section" className="mt-8">
+                        {data?.post && !loading && !error && (
+                            <CommentSection postId={data.post.id} />
+                        )}
+                    </div>
                 </div>
             </main>
         </div>
