@@ -12,5 +12,15 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src')
     }
+  },
+  server: {
+    proxy: {
+      '/graphql': {
+        target: 'https://api.bettermode.com',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/graphql/, '/graphql')
+      }
+    }
   }
 })

@@ -1,3 +1,20 @@
+export enum PostListOrderByEnum {
+  createdAt = 'createdAt',
+  updatedAt = 'updatedAt',
+  title = 'title',
+  reactionsCount = 'reactionsCount'
+}
+
+export interface PostsQueryVariables {
+  limit: number;
+  after?: string | null;
+  orderBy?: PostListOrderByEnum;
+  reverse?: boolean;
+}
+
+export interface SinglePostQueryVariables {
+  id: string;
+}
 export interface Post {
   id: string;
   title: string;
