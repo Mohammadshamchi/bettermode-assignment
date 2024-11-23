@@ -13,6 +13,7 @@ const httpLink = createHttpLink({
 
 const authLink = setContext((_, { headers }) => {
   const token = import.meta.env.VITE_BETTERMODE_TOKEN;
+  console.log('Using token:', token); // Add this temporarily to check
   
   return {
     headers: {
@@ -55,52 +56,43 @@ const retryLink = new RetryLink({
   }
 });
 
+interface CacheNode {
+  id: string;
+  [key: string]: any;
+}
+
+interface Edge {
+  node: CacheNode;
+}
+
+interface ExistingData {
+  edges: Edge[];
+}
+
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
         posts: {
           keyArgs: ['spaceIds'],
-          merge(existing = { edges: [] }, incoming, { args }) {
-            if (!args?.after) {
+          merge(existing: ExistingData | undefined = { edges: [] }, 
+               incoming: ExistingData) {
+            if (!existing?.edges) {
               return incoming;
             }
 
-            return {
-              ...incoming,
-              edges: [...(existing.edges || []), ...(incoming.edges || [])],
-              pageInfo: incoming.pageInfo
-            };
-          }
-        },
-        replies: {
-          keyArgs: ['postId'],
-          merge(existing = { nodes: [] }, incoming, { args }) {
-            if (!args?.after) {
-              return incoming;
-            }
+            const existingEdges = existing.edges;
+            const incomingEdges = incoming.edges;
 
-            const existingNodes = existing?.nodes ?? [];
-            const incomingNodes = incoming?.nodes ?? [];
-
-            const existingIds = new Set(existingNodes.map(node => node.id));
-            const uniqueIncomingNodes = incomingNodes.filter(
-              node => !existingIds.has(node.id)
+            const existingIds = new Set(existingEdges.map(edge => edge.node.id));
+            const uniqueIncomingEdges = incomingEdges.filter(
+              edge => !existingIds.has(edge.node.id)
             );
 
             return {
               ...incoming,
-              nodes: [...existingNodes, ...uniqueIncomingNodes],
+              edges: [...existingEdges, ...uniqueIncomingEdges]
             };
-          }
-        }
-      }
-    },
-    Post: {
-      fields: {
-        replies: {
-          merge(existing, incoming) {
-            return incoming;
           }
         }
       }

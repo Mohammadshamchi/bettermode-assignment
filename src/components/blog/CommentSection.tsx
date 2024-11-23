@@ -1,8 +1,9 @@
 import { useComments } from '@/hooks/useComments';
-import { Button } from '@/components/ui/Button';
-import { Comment } from './Comment';
+import { Button } from '@/components/ui/button';
+import { Comment as CommentComponent } from './Comment';
 import { CommentForm } from './CommentForm';
 import { Spinner } from '@/components/ui/Spinner';
+import type { Comment as CommentType } from '@/types/comment.types';
 
 interface CommentSectionProps {
     postId: string;
@@ -51,8 +52,8 @@ export function CommentSection({ postId }: CommentSectionProps) {
             )}
 
             <div className="space-y-4">
-                {comments?.map((comment) => (
-                    <Comment
+                {comments?.map((comment: CommentType) => (
+                    <CommentComponent
                         key={comment.id}
                         comment={comment}
                         postId={postId}

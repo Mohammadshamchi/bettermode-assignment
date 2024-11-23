@@ -33,11 +33,6 @@ export const GET_COMMENTS = gql`
             }
           }
         }
-        reactions {
-          reaction
-          count
-          reacted
-        }
       }
       pageInfo {
         hasNextPage
@@ -49,22 +44,31 @@ export const GET_COMMENTS = gql`
 `;
 
 export const ADD_COMMENT = gql`
-  mutation AddComment($postId: ID!, $content: String!) {
-    createReply(
-      input: {
-        postId: $postId
-        postTypeId: "YZgUv70tONq4oqT"
-        fields: [
-          {
-            key: "content"
-            value: $content
-          }
-        ]
-      }
-    ) {
+  mutation AddComment($postId: ID!, $input: CreatePostInput!) {
+    createReply(postId: $postId, input: $input) {
       id
       shortContent
       createdAt
+      reactionsCount
+      repliesCount
+      totalRepliesCount
+      fields {
+        key
+        value
+      }
+      owner {
+        member {
+          displayName
+          name
+          profilePicture {
+            ... on Image {
+              urls {
+                thumb
+              }
+            }
+          }
+        }
+      }
     }
   }
 `;

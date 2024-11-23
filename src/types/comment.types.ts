@@ -2,9 +2,16 @@ export interface Comment {
   id: string;
   shortContent: string;
   createdAt: string;
+  reactionsCount: number;
+  repliesCount: number;
+  totalRepliesCount: number;
+  fields: {
+    key: string;
+    value: string;
+  }[];
   owner: {
     member: {
-      displayName: string | null;
+      displayName: string;
       name: string;
       profilePicture?: {
         urls?: {
@@ -13,20 +20,8 @@ export interface Comment {
       };
     };
   };
-  reactionsCount: number;
-  repliesCount: number;
-  totalRepliesCount: number;
-  fields: {
-    key: string;
-    value: string;
-  }[];
   replies?: {
     nodes: Comment[];
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-    totalCount: number;
   };
 }
 
@@ -39,4 +34,11 @@ export interface CommentResponse {
     };
     totalCount: number;
   };
+}
+
+export interface CommentFormProps {
+  postId: string;
+  parentId?: string;
+  onSubmit: (content: string, parentId?: string) => Promise<any>;
+  onCancel: () => void;
 }

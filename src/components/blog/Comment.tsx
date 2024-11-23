@@ -1,8 +1,8 @@
 import { useState } from 'react';
-// import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow } from 'date-fns';
 import { MessageSquare, Heart } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { CommentForm } from './CommentForm';
 import type { Comment as CommentType } from '@/types/comment.types';
 import { useComments } from '@/hooks/useComments';
@@ -17,14 +17,14 @@ export function Comment({ comment, postId }: CommentProps) {
     const { addComment } = useComments(postId);
 
     const content = comment.fields.find(field => field.key === 'content')?.value || '';
-    const parsedContent = JSON.parse(content);
+    const parsedContent = content.replace(/^"|"$/g, '');
 
     return (
         <div className="flex space-x-4">
             <Avatar className="h-10 w-10">
                 <AvatarImage
-                    src={comment.owner.member.profilePicture?.urls?.thumb}
-                    alt={comment.owner.member.name}
+                    src={comment.owner.member.profilePicture?.urls?.thumb || ''}
+                    alt={comment.owner.member.displayName}
                 />
                 <AvatarFallback>
                     {comment.owner.member.name.charAt(0)}

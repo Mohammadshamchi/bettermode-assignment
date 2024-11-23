@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { Heart } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from '@/components/ui/button';
 import { ADD_REACTION, REMOVE_REACTION } from '@/graphql/mutations/reactions';
 
 interface LikeButtonProps {

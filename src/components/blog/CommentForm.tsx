@@ -1,13 +1,6 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Textarea } from '@/components/ui/Textarea';
-
-interface CommentFormProps {
-    postId: string;
-    parentId?: string;
-    onSubmit: (variables: { postId: string; content: string; parentId?: string }) => Promise<any>;
-    onCancel: () => void;
-}
+import { Button } from '@/components/ui/button';
+import type { CommentFormProps } from '@/types/comment.types';
 
 export function CommentForm({ postId, parentId, onSubmit, onCancel }: CommentFormProps) {
     const [content, setContent] = useState('');
@@ -25,15 +18,7 @@ export function CommentForm({ postId, parentId, onSubmit, onCancel }: CommentFor
         try {
             setIsSubmitting(true);
             setError('');
-
-            const htmlContent = `<p>${content}</p>`; // Basic HTML wrapping
-
-            await onSubmit({
-                postId,
-                content: htmlContent,
-                ...(parentId && { parentId })
-            });
-
+            await onSubmit(content, parentId);
             setContent('');
             onCancel();
         } catch (err) {
@@ -46,22 +31,19 @@ export function CommentForm({ postId, parentId, onSubmit, onCancel }: CommentFor
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <Textarea
+            <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Write a comment..."
-                className="min-h-[100px] w-full p-3 border rounded-md"
+                rows={4}
                 disabled={isSubmitting}
             />
-
-            {error && (
-                <p className="text-sm text-red-500">{error}</p>
-            )}
-
+            {error && <p className="text-red-500 text-sm">{error}</p>}
             <div className="flex justify-end space-x-2">
                 <Button
                     type="button"
-                    variant="ghost"
+                    variant="outline"
                     onClick={onCancel}
                     disabled={isSubmitting}
                 >

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Clock, User, Heart, MessageSquare, Bookmark, Share2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { Button } from '@/components/ui/button';
 import { BlogCardProps, Post } from '@/types/blog.types';
 import { motion } from 'framer-motion';
 
