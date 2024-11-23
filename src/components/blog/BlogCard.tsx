@@ -90,6 +90,7 @@ export function BlogCard({ post, onClick }: BlogCardProps) {
                             <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
                         </Button>
                         <Button
+                            aria-label="share"
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 bg-white/90 backdrop-blur-sm hover:bg-white"
@@ -111,7 +112,7 @@ export function BlogCard({ post, onClick }: BlogCardProps) {
                                 {post.title}
                             </h3>
                             <p className="text-gray-600 line-clamp-2 text-sm leading-relaxed">
-                                {cleanDescription || 'No description available'}
+                                {post.description}
                             </p>
                         </div>
 
@@ -153,13 +154,13 @@ export function BlogCard({ post, onClick }: BlogCardProps) {
                                 </div>
                                 <div className="flex items-center space-x-1">
                                     <MessageSquare className="w-3.5 h-3.5" />
-                                    <span className="text-xs">{post.commentsCount || 0}</span>
+                                    <span data-testid="comments-count" className="text-xs">{post.commentsCount || 0}</span>
                                 </div>
                                 <div className="flex items-center space-x-1">
                                     <Heart
                                         className={`w-3.5 h-3.5 ${post.reactionsCount > 0 ? 'fill-red-500 text-red-500' : ''}`}
                                     />
-                                    <span className="text-xs">{post.reactionsCount || 0}</span>
+                                    <span data-testid="reactions-count" className="text-xs">{post.reactionsCount || 0}</span>
                                 </div>
                             </div>
                         </div>

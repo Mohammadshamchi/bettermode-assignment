@@ -1,4 +1,4 @@
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
 import { MockedProvider } from '@apollo/client/testing';
 import { LikeButton } from '../ui/LikeButton';
 import { ADD_REACTION, REMOVE_REACTION } from '@/graphql/mutations/reactions';
@@ -32,6 +32,8 @@ describe('LikeButton', () => {
         const button = screen.getByRole('button');
         await fireEvent.click(button);
 
-        expect(screen.getByText('1 likes')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(screen.getByText('1 likes')).toBeInTheDocument();
+        });
     });
 });

@@ -2,32 +2,19 @@ import { useState } from 'react';
 import { useMutation } from '@apollo/client';
 import { ADD_REACTION, REMOVE_REACTION } from '@/graphql/mutations/reactions';
 
-export function useReactions(postId: string) {
-  const [addReactionMutation] = useMutation(ADD_REACTION, {
-    update(cache, { data: { addReaction } }) {
-      cache.modify({
-        id: cache.identify({ __typename: 'Post', id: postId }),
-        fields: {
-          reactionsCount: () => addReaction.reactionsCount,
-          reactions: () => addReaction.reactions
-        }
-      });
-    }
-  });
+interface UseReactionsProps {
+  postId: string;
+  initialReactionState?: boolean;
+}
 
-  const [removeReactionMutation] = useMutation(REMOVE_REACTION, {
-    update(cache, { data: { removeReaction } }) {
-      cache.modify({
-        id: cache.identify({ __typename: 'Post', id: postId }),
-        fields: {
-          reactionsCount: () => removeReaction.reactionsCount,
-          reactions: () => removeReaction.reactions
-        }
-      });
-    }
-  });
+export function useReactions({ 
+  postId, 
+  initialReactionState = false 
+}: UseReactionsProps) {
+  const [hasReacted, setHasReacted] = useState(initialReactionState);
 
-  const [hasReacted, setHasReacted] = useState(false);
+  const [addReactionMutation, { loading: addLoading }] = useMutation(ADD_REACTION);
+  const [removeReactionMutation, { loading: removeLoading }] = useMutation(REMOVE_REACTION);
 
   const toggleReaction = async () => {
     try {
@@ -35,14 +22,16 @@ export function useReactions(postId: string) {
         await removeReactionMutation({
           variables: {
             postId,
-            reaction: "like"
+            reaction: 'LIKE',
           }
         });
       } else {
         await addReactionMutation({
           variables: {
             postId,
-            reaction: "like"
+            input: {
+              type: 'LIKE'
+            }
           }
         });
       }
@@ -54,6 +43,7 @@ export function useReactions(postId: string) {
 
   return {
     hasReacted,
-    toggleReaction
+    toggleReaction,
+    loading: addLoading || removeLoading
   };
 }

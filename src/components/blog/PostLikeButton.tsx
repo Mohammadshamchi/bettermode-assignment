@@ -9,12 +9,21 @@ interface PostLikeButtonProps {
     initialLiked?: boolean;
 }
 
-export function PostLikeButton({ postId, initialCount, initialLiked = false }: PostLikeButtonProps) {
+export function PostLikeButton({
+    postId,
+    initialCount,
+    initialLiked = false
+}: PostLikeButtonProps) {
     const [count, setCount] = useState(initialCount);
-    const { hasReacted, toggleReaction } = useReactions(postId);
+    const { hasReacted, toggleReaction, loading } = useReactions({
+        postId,
+        initialReactionState: initialLiked
+    });
     const [isLiked, setIsLiked] = useState(initialLiked);
 
     const handleClick = async () => {
+        if (loading) return;
+
         try {
             await toggleReaction();
             setCount(prev => isLiked ? prev - 1 : prev + 1);
@@ -29,6 +38,7 @@ export function PostLikeButton({ postId, initialCount, initialLiked = false }: P
             variant="ghost"
             className="flex items-center gap-2 hover:text-red-600 transition-colors"
             onClick={handleClick}
+            disabled={loading}
         >
             <Heart
                 className={`w-5 h-5 transition-colors ${isLiked ? 'fill-red-500 text-red-500' : ''
