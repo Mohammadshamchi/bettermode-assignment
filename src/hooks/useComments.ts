@@ -5,7 +5,37 @@ import type { Comment, CommentResponse } from '@/types/comment.types';
 
 export function useComments(postId: string) {
   const [isReplying, setIsReplying] = useState(false);
-  const [addCommentMutation] = useMutation(ADD_COMMENT);
+  const [addCommentMutation] = useMutation(ADD_COMMENT, {
+    update(cache, { data: { createReply } }) {
+      const existingComments = cache.readQuery<{ replies: CommentResponse['replies'] }>({
+        query: GET_COMMENTS,
+        variables: {
+          postId,
+          limit: 10,
+          orderBy: "createdAt",
+          reverse: true
+        }
+      });
+
+      if (existingComments?.replies) {
+        cache.writeQuery({
+          query: GET_COMMENTS,
+          variables: {
+            postId,
+            limit: 10,
+            orderBy: "createdAt",
+            reverse: true
+          },
+          data: {
+            replies: {
+              ...existingComments.replies,
+              nodes: [createReply, ...existingComments.replies.nodes]
+            }
+          }
+        });
+      }
+    }
+  });
   const { data, loading, error, fetchMore } = useQuery(GET_COMMENTS, {
     variables: {
       postId,

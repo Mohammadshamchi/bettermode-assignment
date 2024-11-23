@@ -1,0 +1,24 @@
+{
+  "search": {
+    "resultsPerPage": 1200,
+    "files": {
+      "include": ["*"],
+      "exclude": []
+    }
+  },
+  "reranker": "smart",
+  "reasoning": true,
+  "editor": {
+    "theme": "dark",
+    "fontSize": 14,
+    "tabSize": 2,
+    "lineNumbers": true
+  },
+  "cursor": {
+    "enabled": true,
+    "suggestions": true
+  },
+  "defaults": {
+    "initialLiked": true
+  }
+}

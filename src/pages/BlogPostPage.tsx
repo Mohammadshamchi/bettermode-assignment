@@ -21,14 +21,73 @@ import {
     Card,
     CardContent,
 } from '@/components/ui/Card';
-import { Post } from '@/types/blog.types';
 import { CommentSection } from '@/components/blog/CommentSection';
+import { PostLikeButton } from '@/components/blog/PostLikeButton';
 
 // Add an interface for the field structure
 interface Field {
     key: string;
     value: string;
     // Add other field properties if they exist
+}
+
+// Add this interface to src/types/blog.types.ts
+export interface Reaction {
+    reaction: string;
+    count: number;
+}
+
+// Then update the Post interface to include proper typing for reactions
+export interface Post {
+    id: string;
+    title: string;
+    description: string;
+    shortContent: string;
+    createdAt: string;
+    status: "PUBLISHED" | "DRAFT" | "HIDDEN";
+    url: string;
+    relativeUrl: string;
+    reactionsCount: number;
+    commentsCount?: number;
+    fields?: {
+        key: string;
+        value: string;
+        relationEntities?: {
+            medias?: Array<{
+                url?: string;
+                urls?: {
+                    medium?: string;
+                    small?: string;
+                };
+            }>;
+        };
+    }[];
+    tags?: Array<{
+        id: string;
+        title: string;
+    }>;
+    thumbnail?: {
+        url?: string;
+        urls?: {
+            medium?: string;
+            small?: string;
+        };
+    };
+    reactions: Reaction[];
+    space: {
+        id: string;
+        name: string;
+    };
+    owner?: {
+        member?: {
+            displayName: string;
+            profilePicture?: {
+                urls?: {
+                    thumb?: string;
+                };
+            };
+        };
+    };
 }
 
 const BlogPostPage = () => {
@@ -254,16 +313,11 @@ const BlogPostPage = () => {
                         <CardContent className="p-6">
                             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                                 <div className="flex items-center gap-6">
-                                    <Button
-                                        variant="ghost"
-                                        className="flex items-center gap-2 hover:text-red-600 transition-colors"
-                                    >
-                                        <Heart
-                                            className={`w-5 h-5 transition-colors ${post.reactionsCount > 0 ? 'fill-red-500 text-red-500' : ''
-                                                }`}
-                                        />
-                                        <span>{post.reactionsCount || 0} likes</span>
-                                    </Button>
+                                    <PostLikeButton
+                                        postId={post.id}
+                                        initialCount={post.reactionsCount || 0}
+                                        initialLiked={post.reactions?.some((r: { reaction: string }) => r.reaction === 'like')}
+                                    />
                                     <Button
                                         variant="ghost"
                                         className="flex items-center gap-2"
