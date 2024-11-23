@@ -26,12 +26,13 @@ export function useComments(postId: string) {
               {
                 key: "content",
                 type: "html",
-                value: content
+                value: JSON.stringify(content)
               }
             ],
+            publish: true,
             ...(parentId && { repliedToId: parentId })
           }
-        },
+        }
       });
       setIsReplying(false);
       return response.data?.createReply;
