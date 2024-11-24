@@ -4,13 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b --force && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "dev": "vite --config src/config/vite.config.ts",
+    "build": "tsc -p src/config/tsconfig.json && vite build --config src/config/vite.config.ts",
+    "lint": "eslint . --config src/config/eslint.config.js",
+    "test": "jest --config src/config/jest.config.js"
   },
   "dependencies": {
     "@apollo/client": "^3.11.10",
