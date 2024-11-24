@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 import { GET_POST } from '@/graphql/queries/posts';
@@ -17,10 +17,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-    Card,
-    CardContent,
-} from '@/components/ui/Card';
+import { Card, CardContent } from '@/components/ui/Card';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { PostLikeButton } from '@/components/blog/PostLikeButton';
 
