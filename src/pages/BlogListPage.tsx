@@ -1,4 +1,3 @@
-// src/pages/BlogListPage.tsx
 import React, { memo } from 'react';
 import { Book } from 'lucide-react';
 import BlogGrid from '@/components/blog/BlogGrid';
