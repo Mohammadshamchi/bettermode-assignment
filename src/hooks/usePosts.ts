@@ -1,4 +1,3 @@
-// src/hooks/usePosts.ts
 import { useState, useCallback, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_POSTS } from '../graphql/queries/posts';
