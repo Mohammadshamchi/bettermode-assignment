@@ -16,58 +16,15 @@ export interface SinglePostQueryVariables {
   id: string;
 }
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  description: string;
-  shortContent: string;
-  createdAt: string;
-  status: "PUBLISHED" | "DRAFT" | "HIDDEN";
-  url: string;
-  relativeUrl: string;
-  reactionsCount: number;
-  commentsCount?: number;
-  fields?: {
-    key: string;
-    value: string;
-    relationEntities?: {
-      medias?: Array<{
-        url?: string;
-        urls?: {
-          medium?: string;
-          small?: string;
-        };
-      }>;
-    };
-  }[];
-  tags?: Array<{
-    id: string;
-    title: string;
-  }>;
-  thumbnail?: {
-    url?: string;
-    urls?: {
-      medium?: string;
-      small?: string;
-    };
-  };
-  reactions: {
-    reaction: string;
-    count: number;
-  }[];
-  space: {
-    id: string;
-    name: string;
-  };
-  owner?: {
-    member?: {
-      displayName: string;
-      profilePicture?: {
-        urls?: {
-          thumb?: string;
-        };
-      };
-    };
-  };
+  slug: string;
+  author: number;
+  thumbnail: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  published: boolean;
 }
 
 export interface BlogPost extends Post {
@@ -78,7 +35,8 @@ export interface BlogPost extends Post {
   imageUrl: string;
   categories: string[];
   readTime: string;
-  fields?: Post['fields']; // Include fields from Post interface
+  slug: string;
+  fields?: Post['fields'];
 }
 
 export interface BlogCardProps {

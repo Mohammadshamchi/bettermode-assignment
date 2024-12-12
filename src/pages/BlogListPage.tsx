@@ -4,7 +4,7 @@ import BlogGrid from '@/components/blog/BlogGrid';
 import { Header } from '@/components/Header';
 import { SearchBar } from '@/components/ui/SearchBar';
 import { SearchSkeleton } from '@/components/ui/SearchSkeleton';
-import { usePosts } from '../hooks/usePosts';
+import { usePosts } from '../hooks/fetchPosts';
 
 export const BlogListPage = memo(() => {
     const { posts, loading, error, hasMore, loadMore, handleSearch, searchQuery } = usePosts(12);

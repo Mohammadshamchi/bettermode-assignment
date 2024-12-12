@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { BlogGridProps, BlogPost } from '@/types/blog.types'
+import React, { memo } from 'react';
+import { BlogGridProps, BlogPost } from '../../types/blog.types'
 import { BlogCard } from './BlogCard'
 
 const BlogGrid = memo(({ posts, loading, onLoadMore, hasMore }: BlogGridProps) => {
@@ -12,8 +12,9 @@ const BlogGrid = memo(({ posts, loading, onLoadMore, hasMore }: BlogGridProps) =
                     <BlogCard
                         key={post.id}
                         post={post}
-                        onClick={(id: string) => {
-                            window.location.href = `/post/${id}`
+                        onClick={() => {
+                            const formattedSlug = post.slug.replace(/\/$/, '').replace(/-wit$/, '');
+                            window.location.href = `/posts/${post.id}`;
                         }}
                     />
                 ))}

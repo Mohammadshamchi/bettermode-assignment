@@ -1,44 +1,15 @@
 export interface Comment {
-  id: string;
-  shortContent: string;
-  createdAt: string;
-  reactionsCount: number;
-  repliesCount: number;
-  totalRepliesCount: number;
-  fields: {
-    key: string;
-    value: string;
-  }[];
-  owner: {
-    member: {
-      displayName: string;
-      name: string;
-      profilePicture?: {
-        urls?: {
-          thumb?: string;
-        };
-      };
-    };
-  };
-  replies?: {
-    nodes: Comment[];
-  };
+  id: number;
+  content: string,
+  author: number,
+  post: number;
+  parent: number | null;
+  created_at: string,
+  children?: Comment[];
 }
 
-export interface CommentResponse {
-  replies: {
-    nodes: Comment[];
-    pageInfo: {
-      hasNextPage: boolean;
-      endCursor: string;
-    };
-    totalCount: number;
-  };
-}
-
-export interface CommentFormProps {
-  postId: string;
-  parentId?: string;
-  onSubmit: (content: string, parentId?: string) => Promise<any>;
-  onCancel: () => void;
+export interface createCommentDTO{
+  content: string,
+  parent?: string,
+  post:string| number,
 }

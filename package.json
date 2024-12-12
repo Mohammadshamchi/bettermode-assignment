@@ -12,6 +12,7 @@
   "dependencies": {
     "@apollo/client": "^3.11.10",
     "@tailwindcss/typography": "^0.5.15",
+    "axios": "^1.7.9",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "daisyui": "^4.12.14",

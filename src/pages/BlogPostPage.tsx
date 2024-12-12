@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
-import { GET_POST } from '@/graphql/queries/posts';
+import axios from 'axios';
+import { GET_POSTS } from '@/graphql/queries/posts';
 import {
     Calendar,
     Clock,
@@ -20,15 +20,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/Card';
 import { CommentSection } from '@/components/blog/CommentSection';
 import { PostLikeButton } from '@/components/blog/PostLikeButton';
+import { PostsAPI } from '../lib/api';
 
-// Add an interface for the field structure
+
 interface Field {
     key: string;
     value: string;
-    // Add other field properties if they exist
 }
 
-// Add this interface to src/types/blog.types.ts
+
 export interface Reaction {
     reaction: string;
     count: number;
@@ -40,13 +40,15 @@ export interface Post {
     title: string;
     description: string;
     shortContent: string;
+    content: string;
     createdAt: string;
     status: "PUBLISHED" | "DRAFT" | "HIDDEN";
     url: string;
     relativeUrl: string;
     reactionsCount: number;
     commentsCount?: number;
-    fields?: {
+    textContent?: string;
+    mappingFields?: Array<{
         key: string;
         value: string;
         relationEntities?: {
@@ -58,7 +60,7 @@ export interface Post {
                 };
             }>;
         };
-    }[];
+    }>[];
     tags?: Array<{
         id: string;
         title: string;
@@ -85,38 +87,78 @@ export interface Post {
             };
         };
     };
-}
+};
+
 
 const BlogPostPage = () => {
     const [copied, setCopied] = useState(false);
-    const { id } = useParams<{ id: string }>();
-    const { data, loading, error } = useQuery(GET_POST, {
-        variables: { id },
-        skip: !id
-    });
+    const [post, setPost] = useState<Post | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+    const { slug } = useParams<{ slug: string }>();
+    useEffect(() => {
+        const fetchPost = async () => {
+            try {
+                console.log('Fetching post with slug:', slug);
+                setLoading(true);
+                const cleanSlug = slug?.replace(/-wit$/, '');
+                const response = await PostsAPI.getPostBySlug(cleanSlug || '');
+
+                if (!response.data || response.status === 404) {
+                    throw new Error('Post not found');
+                }
+
+                const targetPost = response.data;
+                const transformedPost = {
+                    ...targetPost,
+                    id: targetPost.id.toString(),
+                    title: targetPost.title,
+                    content: targetPost.content,
+                    description: targetPost.content.substring(0, 200) + "...",
+                    shortContent: targetPost.content,
+                    createdAt: targetPost.created_at,
+                    status: targetPost.published ? "PUBLISHED" : "DRAFT",
+                    url: `/post/${targetPost.slug}`,
+                    relativeUrl: `/post/${targetPost.slug}`,
+                    reactionsCount: 0,
+                    reactions: [],
+                    space: {
+                        id: '1',
+                        name: 'Blog'
+                    },
+                    owner: {
+                        member: {
+                            displayName: `Author ${targetPost.author}`,
+                            profilePicture: {
+                                urls: {
+                                    thumb: '/default-avatar.png'
+                                }
+                            }
+                        }
+                    }
+                };
+                setPost(transformedPost);
+            } catch (err) {
+                console.error("Error fetching post:", err);
+                setError(err instanceof Error ? err : new Error("Failed to fetch post"));
+            } finally {
+                setLoading(false);
+            }
+        };
+        if (slug) {
+            fetchPost();
+        }
+    }, [slug])
+
+    if (error) return <div>Error loadibg post</div>;
+    if (!post) return <div>Post not found</div>;
+
+    const readTime = Math.ceil(post.content.split(' ').length / 200);
+
 
     const getFullContent = () => {
-        if (!data?.post) return '';
-        // Helper function to clean content
-        const cleanContent = (content: string) => {
-            return content
-                .replace(/^["']|["']$/g, '') // Remove leading/trailing quotes
-                .replace(/\\n/g, '\n') // Replace string newlines with actual newlines
-                .replace(/\\"|\\'|""/g, '"') // Clean up escaped quotes
-                .trim();
-        };
-
-        // Check all possible content sources and clean them
-        const contentField = data.post.fields?.find((field: Field) => field.key === 'content');
-        if (contentField) return cleanContent(contentField.value);
-
-        const contentMapping = data.post.mappingFields?.find((field: { key: string }) =>
-            field.key === 'content'
-        );
-        if (contentMapping) return cleanContent(contentMapping.value);
-
-        const mainContent = data.post.textContent || data.post.shortContent || '';
-        return cleanContent(mainContent);
+        if (!post) return '';
+        return post.content || post.shortContent || ""
     };
 
     const handleShare = async () => {
@@ -140,7 +182,7 @@ const BlogPostPage = () => {
         );
     }
 
-    if (error || !data?.post) {
+    if (error || !post) {
         return (
             <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
                 <div className="text-center space-y-4">
@@ -165,8 +207,6 @@ const BlogPostPage = () => {
         );
     }
 
-    const { post } = data;
-    const readTime = Math.ceil(getFullContent().split(' ').length / 200);
 
     return (
         <div className="min-h-screen bg-white">
@@ -211,7 +251,7 @@ const BlogPostPage = () => {
                 <div
                     className="absolute inset-0 opacity-30"
                     style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFF' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23FFF' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2V6h4V4H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
                     }}
                 />
                 <div className="container mx-auto px-4 relative">
@@ -359,8 +399,8 @@ const BlogPostPage = () => {
 
                     {/* Comments Section */}
                     <div id="comments-section" className="mt-8">
-                        {data?.post && !loading && !error && (
-                            <CommentSection postId={data.post.id} />
+                        {post && !loading && !error && (
+                            <CommentSection postId={post.id} />
                         )}
                     </div>
                 </div>
